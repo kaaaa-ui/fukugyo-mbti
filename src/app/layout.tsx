@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
+import Script from "next/script";
 import { Zen_Old_Mincho, Zen_Kaku_Gothic_New } from "next/font/google";
 import "./globals.css";
+import { GA_MEASUREMENT_ID } from "@/lib/gtag";
 
 const zenMincho = Zen_Old_Mincho({
   weight: ["400", "700"],
@@ -49,6 +51,17 @@ export default function RootLayout({
       lang="ja"
       className={`${zenMincho.variable} ${zenKaku.variable} h-full antialiased`}
     >
+      {GA_MEASUREMENT_ID && (
+        <head>
+          <Script
+            src={`https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`}
+            strategy="afterInteractive"
+          />
+          <Script id="gtag-init" strategy="afterInteractive">
+            {`window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','${GA_MEASUREMENT_ID}');`}
+          </Script>
+        </head>
+      )}
       <body className="min-h-full flex flex-col bg-[#fff0f5] text-[#4a2040]">
         {children}
       </body>
