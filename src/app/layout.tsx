@@ -30,14 +30,12 @@ export const metadata: Metadata = {
     title: "副業MBTI診断｜あなたにぴったりの高収入副業がわかる！",
     description:
       "全10問・約1分であなたのMBTIタイプから、ぴったりの高収入副業がわかる無料診断。",
-    images: [{ url: "/ogp.jpg", width: 1200, height: 655, alt: "副業MBTI診断" }],
   },
   twitter: {
     card: "summary_large_image",
     title: "副業MBTI診断｜あなたにぴったりの高収入副業がわかる！",
     description:
       "全10問・約1分であなたのMBTIタイプから、ぴったりの高収入副業がわかる無料診断。",
-    images: ["/ogp.jpg"],
   },
 };
 
