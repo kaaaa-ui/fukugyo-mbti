@@ -1,9 +1,10 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { QuizStart } from "@/components/quiz/QuizStart";
 import { QuizQuestion } from "@/components/quiz/QuizQuestion";
 import { QuizResult } from "@/components/quiz/QuizResult";
+import { QuizAlreadyDone } from "@/components/quiz/QuizAlreadyDone";
 import {
   questions,
   mbtiTypes,
@@ -12,10 +13,12 @@ import {
   type Choice,
 } from "@/lib/mbti-data";
 
-type Phase = "start" | "quiz" | "result";
+const STORAGE_KEY = "mbti_completed";
+
+type Phase = "loading" | "already_done" | "start" | "quiz" | "result";
 
 export default function Home() {
-  const [phase, setPhase] = useState<Phase>("start");
+  const [phase, setPhase] = useState<Phase>("loading");
   const [questionIndex, setQuestionIndex] = useState(0);
   const [scores, setScores] = useState<Record<Axis, number>>({
     EI: 0,
@@ -24,6 +27,17 @@ export default function Home() {
     JP: 0,
   });
   const [resultCode, setResultCode] = useState<string>("");
+
+  // 初回ロード時に診断済みチェック
+  useEffect(() => {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (saved) {
+      setResultCode(saved);
+      setPhase("already_done");
+    } else {
+      setPhase("start");
+    }
+  }, []);
 
   const handleStart = useCallback(() => {
     setPhase("quiz");
@@ -44,6 +58,7 @@ export default function Home() {
       } else {
         const code = calculateMbtiType(newScores);
         setResultCode(code);
+        localStorage.setItem(STORAGE_KEY, code);
         setPhase("result");
       }
     },
@@ -57,8 +72,19 @@ export default function Home() {
     setResultCode("");
   }, []);
 
+  if (phase === "loading") {
+    return (
+      <main className="flex min-h-screen flex-col items-center justify-center">
+        <div className="text-pink-400 text-sm">読み込み中...</div>
+      </main>
+    );
+  }
+
   return (
     <main className="flex min-h-screen flex-col items-center justify-center">
+      {phase === "already_done" && resultCode && mbtiTypes[resultCode] && (
+        <QuizAlreadyDone result={mbtiTypes[resultCode]} />
+      )}
       {phase === "start" && <QuizStart onStart={handleStart} />}
       {phase === "quiz" && (
         <QuizQuestion
